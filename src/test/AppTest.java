@@ -23,7 +23,7 @@ public class AppTest extends FluentTest {
 
   @Before
   public void setUp() {
-    DB.sql2o = new sql2o("jdbc:postgresql://localhost:5432/to_test", null, null);
+    DB.sql2o = new sql2o("jdbc:postgresql://localhost:5432/to_do_test", null, null);
   }
 
   @After
@@ -36,11 +36,28 @@ public class AppTest extends FluentTest {
     }
   }
 
- //  @Test
- // public void rootTest() {
- //   goTo("http://localhost:4567/");
- //   assertThat(pageSource()).contains("Todo list!");
- //   assertThat(pageSource()).contains("View Category List");
- //   assertThat(pageSource()).contains("Add a New Category");
- // }
+  @Test
+  public void rootTest() {
+    goTo("http://localhost:4567/");
+    assertThat(pageSource()).contains("Todo list!");
+ }
+
+  @Test
+  public void categoryIsCreatedTest() {
+    goTo("http://localhost:4567/");
+    click("a", withText("Add a new category"));
+    fill("#name").with("Household chores");
+    submit(".btn");
+    assertThat(pageSource()).contains("Your category has been saved.");
+  }
+
+  @Test
+  public void categoryIsDisplayedTest() {
+    Category myCategory = new Category("Household chores");
+    myCategory.save();
+    String categoryPath = String.format("http://localhost:4567/%d", myCategory.getId());
+    goTo(categoryPath);
+    assertThat(pageSource()).contains("Household chores");
+  }
+
 }
